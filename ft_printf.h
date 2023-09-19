@@ -6,10 +6,12 @@
 #include <unistd.h>
 #include <unistd.h>
 
+
+
 int ft_printf(const char *format, ...);
-int ft_putnbr_base(long long n, char *base, int i);
-int ft_putstr(char *s);
-int ft_putchar(char c);
-int print_pointer(unsigned long long ptr);
+void ft_putnbr_base(long long n, char *base, int i);
+void ft_putstr(char *s, int *std_output);
+void ft_putchar(char c);
+void print_pointer(unsigned long long ptr);
 
 #endif
