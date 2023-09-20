@@ -66,3 +66,30 @@
 //         hex++; // Move the pointer forward
 //     }
 // }
+
+#include "stdarg.h"
+#include "unistd.h"
+void fwprintf(char *format, ...)
+{
+	va_list arg;
+
+	va_start(arg, format);
+
+	while (*format)
+	{
+		if (*format)
+		{
+			format++;
+			if (*format == 'c')
+			{
+				char c = va_arg(arg, int); // Retrieve the character as an int
+				write(1, &(va_arg(arg, int)), 1);
+			}
+		}
+	}
+}
+
+int main()
+{
+	fwprintf("%c", 'c');
+}
