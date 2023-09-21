@@ -1,6 +1,7 @@
 {
 	"files.associations": {
 		"limits.h": "c",
-		"stdarg.h": "c"
+		"stdarg.h": "c",
+		"stdio.h": "c"
 	}
 }

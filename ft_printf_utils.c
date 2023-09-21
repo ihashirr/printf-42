@@ -1,184 +1,60 @@
-// #include "ft_printf.h"
-
-// static int ft_strlen(const char *s)
-// {
-// 	size_t i;
-// 	if(!s)
-// 	{
-// 		return 0;
-// 	}
-// 	i = 0;
-// 	while (s[i] != '\0')
-// 		i++;
-// 	return (i);
-// }
-// void ft_putstr(char *s, int * std_output)
-// {
-// 	if (!s)
-// 	{
-// 		*std_output += write(1, "(null)", 6);
-// 		return;
-// 	}
-// 	*std_output += write(1, s, ft_strlen(s));
-// }
-// void ft_putnbr_base(long long n, char *base, int i, int *std_output)
-// {
-// 	if (n < 0)
-// 	{
-// 		*std_output += write(1, "-", 1);
-// 		n = -n;
-// 	}
-// 	if (n / i > 0)
-// 		ft_putnbr_base(n / i, base, i, std_output);
-// 	*std_output += write(1, &base[n % i], 1);
-// }
-
-// void print_pointer( long long ptr, int *std_output)
-// {
-// 	*std_output += write(1, "0x", 2);
-// 	ft_putnbr_base(ptr, "0123456789abcdef", 16, std_output);
-// }
-
-// int ft_printf_p(unsigned long n, char *base, int i, int flag)
-// {
-// 	int c;
-
-// 	c = 0;
-// 	if (!n && flag == 0)
-// 		return (ft_printf_s("(nil)"));
-// 	if (flag == 0)
-// 		c += ft_printf_s("0x");
-// 	if (n / i > 0)
-// 		c += ft_printf_p(n / i, base, i, ++flag);
-// 	write(1, &base[n % i], 1);
-// 	c++;
-// 	return (c);
-// }
-
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.c                                        :+:      :+:    :+:   */
+/*   ft_printf_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anlima <anlima@student.42lisboa.com>       +#+  +:+       +#+        */
+/*   By: mhashir <mhashir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/13 12:38:52 by anlima            #+#    #+#             */
-/*   Updated: 2022/11/19 13:09:13 by anlima           ###   ########.fr       */
+/*   Created: 2023/09/22 01:55:01 by mhashir           #+#    #+#             */
+/*   Updated: 2023/09/22 03:22:29 by mhashir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-static int ft_printf_p(unsigned long n, char *base, int i, int flag);
-static int ft_putnbr_base(long long int n, char *base, int i);
-static int ft_printf_s(char *s);
-static int ft_call_print(char s, va_list arg);
-int ft_printf(const char *s, ...);
-
-static int ft_printf_p(unsigned long n, char *base, int i, int flag)
+void	ft_putstr(char *s, int *std_output)
 {
-	int c;
-
-	c = 0;
-	// if (!n && flag == 0)
-	// 	return (ft_printf_s("0x0"));
-	if(n ==0){
-		c += write(1,"0",1);
-		return c;
+	if (!s)
+	{
+		*std_output += write(1, "(null)", 6);
+		return ;
 	}
-	if (flag == 0)
-		c += ft_printf_s("0x");
-	
-	if (n / i > 0)
-		c += ft_printf_p(n / i, base, i, ++flag);
-	write(1, &base[n % i], 1);
-	c++;
-	return (c);
+	while (*s != '\0')
+	{
+		*std_output += write(1, s, 1);
+		s++;
+	}
 }
 
-static int ft_putnbr_base(long long int n, char *base, int i)
+void	ft_putnbr_base(long long n, char *base, int i, int *std_output)
 {
-	int c;
+	unsigned long long	num;
 
-	c = 0;
+	num = n;
+	if (num / i > 0)
+		ft_putnbr_base(num / i, base, i, std_output);
+	*std_output += write(1, &base[num % i], 1);
+}
+
+void	ft_putnbr( long n, char *base, int i, int *std_output)
+{
 	if (n < 0)
 	{
-		c += ft_printf_s("-");
+		*std_output += write(1, "-", 1);
 		n = -n;
 	}
 	if (n / i > 0)
-		c += ft_putnbr_base(n / i, base, i);
-	write(1, &base[n % i], 1);
-	c++;
-	return (c);
+		ft_putnbr(n / i, base, i, std_output);
+	*std_output += write(1, &base[n % i], 1);
 }
 
-static int ft_printf_s(char *s)
+void	print_pointer(unsigned long long p, int *std_output)
 {
-	int i;
-
-	if (!s)
-		return (ft_printf_s("(null)"));
-	i = 0;
-	while (s[i])
+	*std_output += write(1, "0x", 2);
+	if (p == 0)
 	{
-		write(1, &s[i], 1);
-		i++;
+		*std_output += write(1, "0", 1);
+		return ;
 	}
-	return (i);
-}
-
-static int ft_call_print(char s, va_list arg)
-{
-	int i;
-	int j;
-
-	i = 1;
-	if (s == 'c')
-	{
-		j = va_arg(arg, int);
-		write(1, &j, 1);
-	}
-	else if (s == 's')
-		i = ft_printf_s(va_arg(arg, char *));
-	else if (s == 'd' || s == 'i')
-		i = ft_putnbr_base(va_arg(arg, int), "0123456789", 10);
-	else if (s == '%')
-		write(1, "%%", 1);
-	else if (s == 'x')
-		i = ft_putnbr_base(va_arg(arg, unsigned int), "0123456789abcdef", 16);
-	else if (s == 'X')
-		i = ft_putnbr_base(va_arg(arg, unsigned int), "0123456789ABCDEF", 16);
-	else if (s == 'u')
-		i = ft_putnbr_base(va_arg(arg, unsigned int), "0123456789", 10);
-	else if (s == 'p')
-		i = ft_printf_p(va_arg(arg, long int), "0123456789abcdef", 16, 0);
-	return (i);
-}
-
-int ft_printf(const char *s, ...)
-{
-	va_list arg;
-	int chars;
-	int i;
-
-	chars = 0;
-	i = -1;
-	va_start(arg, s);
-	while (s && s[++i])
-	{
-		if (s[i] != '%')
-		{
-			chars++;
-			write(1, &s[i], 1);
-		}
-		else
-			chars += ft_call_print(s[++i], arg);
-	}
-	va_end(arg);
-	return (chars);
-}
-
-int main(){
-	ft_printf("%p", 0);
+	ft_putnbr_base(p, "0123456789abcdef", 16, std_output);
 }
