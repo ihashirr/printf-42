@@ -6,7 +6,7 @@
 /*   By: mhashir <mhashir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 01:45:09 by mhashir           #+#    #+#             */
-/*   Updated: 2023/09/22 03:07:17 by mhashir          ###   ########.fr       */
+/*   Updated: 2023/09/23 00:44:13 by mhashir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,8 @@ int	ft_printf(const char *format, ...)
 				return (-1);
 			}
 		}
-		format++;
+		if (*format != '\0')
+			format++;
 	}
 	va_end(arg);
 	return (stdout_counter);
